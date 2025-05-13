@@ -1,0 +1,473 @@
+1. Prompt: wie kann ich mithilfe von apache POI docx und pptx dateien einlesen in java?
+--> Ich zeige dir gern, wie du mit Apache POI .docx (Word) und .pptx (PowerPoint) Dateien in Java einliest!
+
+Hier ist ein kompakter Überblick:
+
+1. Maven-Abhängigkeiten
+Füge folgende Abhängigkeiten zu deiner pom.xml hinzu:
+
+xml
+Kopieren
+Bearbeiten
+<dependencies>
+    <!-- Apache POI für DOCX -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>5.2.3</version> <!-- oder aktuellste Version -->
+    </dependency>
+
+    <!-- (Optional) Apache POI Scratchpad falls du ältere Formate .doc, .ppt brauchst -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-scratchpad</artifactId>
+        <version>5.2.3</version>
+    </dependency>
+</dependencies>
+2. .docx Datei (Word) einlesen
+java
+Kopieren
+Bearbeiten
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
+
+public class DocxReader {
+    public static void main(String[] args) {
+        String filePath = "pfad/zur/deiner/datei.docx";
+
+        try (FileInputStream fis = new FileInputStream(filePath);
+             XWPFDocument document = new XWPFDocument(fis)) {
+
+            List<XWPFParagraph> paragraphs = document.getParagraphs();
+            for (XWPFParagraph para : paragraphs) {
+                System.out.println(para.getText());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Damit liest du alle Absätze und gibst deren Text aus.
+
+3. .pptx Datei (PowerPoint) einlesen
+java
+Kopieren
+Bearbeiten
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFShape;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.poi.xslf.usermodel.XSLFTextShape;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
+
+public class PptxReader {
+    public static void main(String[] args) {
+        String filePath = "pfad/zur/deiner/datei.pptx";
+
+        try (FileInputStream fis = new FileInputStream(filePath);
+             XMLSlideShow ppt = new XMLSlideShow(fis)) {
+
+            List<XSLFSlide> slides = ppt.getSlides();
+            for (XSLFSlide slide : slides) {
+                for (XSLFShape shape : slide.getShapes()) {
+                    if (shape instanceof XSLFTextShape) {
+                        XSLFTextShape textShape = (XSLFTextShape) shape;
+                        System.out.println(textShape.getText());
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Hier gehst du alle Folien durch und holst dir Textinhalte.
+
+Zusammengefasst:
+
+Dateityp	Apache POI Klasse	Lesemethode
+.docx	XWPFDocument	getParagraphs()
+.pptx	XMLSlideShow + XSLFSlide	getShapes() -> getText()
+Möchtest du auch wissen, wie du Tabellen aus .docx oder Notizen aus .pptx einlesen kannst?
+(Sind oft Extraschritte nötig!) 
+
+2. Prompt: wie mache ich das in java: Apache Lucene für das sogenannte Tokenizing und Stemming
+--> In Java kannst du Apache Lucene für Tokenizing und Stemming verwenden, indem du die entsprechenden Klassen aus dem Lucene-Core-Paket nutzt. Hier ist ein Beispiel, wie du Tokenizing und Stemming mit Apache Lucene durchführen kannst:
+
+1. Abhängigkeiten in pom.xml (falls du Maven verwendest):
+xml
+Kopieren
+Bearbeiten
+<dependencies>
+    <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>9.0.0</version> <!-- Oder eine andere Version -->
+    </dependency>
+    <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>9.0.0</version> <!-- Oder eine andere Version -->
+    </dependency>
+</dependencies>
+2. Beispielcode für Tokenizing und Stemming:
+java
+Kopieren
+Bearbeiten
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenizer.StandardTokenizer;
+import org.apache.lucene.analysis.stemmer.PorterStemmer;
+import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
+
+import java.io.StringReader;
+import java.io.IOException;
+
+public class TokenizingAndStemmingExample {
+
+    public static void main(String[] args) throws IOException {
+        String text = "Running runners run quickly through the forests.";
+
+        // Tokenizer und Stemmer initialisieren
+        Analyzer analyzer = new EnglishAnalyzer();
+
+        // Tokenize und Stem
+        try (TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(text))) {
+            tokenStream.reset();  // Vorbereitung zum Durchlaufen der Token
+
+            // CharTermAttribute für den Zugriff auf das Token
+            CharTermAttribute termAtt = tokenStream.addAttribute(CharTermAttribute.class);
+
+            while (tokenStream.incrementToken()) {
+                // Token auslesen und ausgeben
+                String token = termAtt.toString();
+                System.out.println("Token: " + token);
+            }
+
+            tokenStream.end();  // Stream beenden
+        }
+    }
+}
+Erklärung:
+Tokenizer: In diesem Fall verwendet der Code EnglishAnalyzer von Lucene, der den Standard-Tokenizer nutzt, um den Text in Tokens zu zerlegen. Du kannst auch andere Tokenizer wie StandardTokenizer oder WhitespaceTokenizer verwenden, je nachdem, welche Tokenisierungsstrategie du benötigst.
+
+Stemming: Der EnglishAnalyzer enthält bereits ein Stemming, da er den PorterStemmer verwendet. Wenn du die Wörter im Text stämmst (also z.B. „running“ zu „run“ und „runners“ zu „runner“), bekommst du die Stammformen der Wörter.
+
+3. Prompt: wie kann man in Java in eine Html Datei schreiben? Mit BufferedWriter?
+--> Ja, du kannst in Java mit einem BufferedWriter in eine HTML-Datei schreiben. Der BufferedWriter bietet eine effiziente Möglichkeit, Zeichen in eine Datei zu schreiben, und du kannst ihn zusammen mit einem FileWriter verwenden, um in eine HTML-Datei zu schreiben.
+
+Hier ist ein Beispiel, wie du eine einfache HTML-Datei mit BufferedWriter erstellen kannst:
+
+java
+Kopieren
+Bearbeiten
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class HtmlWriter {
+    public static void main(String[] args) {
+        String fileName = "example.html";
+
+        // HTML-Inhalt
+        String htmlContent = "<!DOCTYPE html>\n"
+                + "<html lang='de'>\n"
+                + "<head>\n"
+                + "<meta charset='UTF-8'>\n"
+                + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n"
+                + "<title>Beispiel HTML</title>\n"
+                + "</head>\n"
+                + "<body>\n"
+                + "<h1>Hallo, Welt!</h1>\n"
+                + "<p>Dies ist eine einfache HTML-Datei, die mit Java erstellt wurde.</p>\n"
+                + "</body>\n"
+                + "</html>";
+
+        // BufferedWriter verwenden, um in die Datei zu schreiben
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(htmlContent);
+            System.out.println("HTML-Datei erfolgreich geschrieben.");
+        } catch (IOException e) {
+            System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
+        }
+    }
+}
+Erklärung:
+FileWriter: Er wird verwendet, um eine Datei zu öffnen (oder zu erstellen, falls sie nicht existiert). Der FileWriter kann direkt mit dem BufferedWriter kombiniert werden, um einen gepufferten Schreibzugriff zu ermöglichen.
+
+BufferedWriter: Dieser Writer bietet eine effiziente Möglichkeit, Zeichen in die Datei zu schreiben, indem er die Ausgabe puffert.
+
+try-with-resources: Dies stellt sicher, dass der BufferedWriter korrekt geschlossen wird, auch im Falle eines Fehlers.
+
+Das obige Beispiel schreibt eine einfache HTML-Datei mit einem Titel und einem Absatz. Du kannst den HTML-Inhalt anpassen, um deine Anforderungen zu erfüllen.
+
+4. Prompt: ein regex in java mit dem man wenn man einen text splittet an stellen splittet die kein teil des alphabets sind
+
+--> In Java kannst du einen String anhand eines Regex-Ausdrucks mit String.split() aufteilen. Wenn du nur an Stellen splitten willst, die nicht Teil des Alphabets (also keine Buchstaben von A–Z oder a–z) sind, kannst du folgenden regulären Ausdruck verwenden:
+
+Regex zum Splitten an Nicht-Buchstaben-Stellen:
+java
+Kopieren
+Bearbeiten
+String[] words = text.split("[^A-Za-z]+");
+Erklärung des Regex [^\w] vs [^\p{Alpha}]:
+[A-Za-z] – alle lateinischen Buchstaben (groß & klein).
+
+[^A-Za-z] – alles, was kein Buchstabe ist.
+
++ – steht für "eine oder mehrere Wiederholungen", also mehrere Nicht-Buchstaben zusammen (z. B. ", " oder "---").
+
+Beispiel:
+java
+Kopieren
+Bearbeiten
+public class Main {
+    public static void main(String[] args) {
+        String text = "Hello, world! This is a test: Java123.";
+        String[] words = text.split("[^A-Za-z]+");
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                System.out.println(word);
+            }
+        }
+    }
+}
+Ausgabe:
+
+bash
+Kopieren
+Bearbeiten
+Hello
+world
+This
+is
+a
+test
+Java
+Optional: Unicode-freundliche Alternative
+Falls du auch Buchstaben mit Akzenten oder aus anderen Sprachen (z. B. ä, ñ, ß, é) als Teil des Alphabets zählen willst, nutze:
+
+java
+Kopieren
+Bearbeiten
+text.split("[^\\p{IsAlphabetic}]+")
+
+5. Prompt: wie funktioniert das in java? Für Log-Ausgaben einen Logger verwenden - s. Log4J im MVN-Projekt
+--> In Java ist es eine gute Praxis, für Log-Ausgaben ein Logging-Framework wie Log4j zu verwenden, statt direkt mit System.out.println() zu arbeiten. Log4j bietet dir viel mehr Kontrolle, etwa über:
+
+Log-Level (z. B. INFO, DEBUG, ERROR)
+
+Log-Formatierung
+
+Ausgabeziele (Konsole, Datei, etc.)
+
+✅ So funktioniert Log4j im Maven-Projekt
+1. Abhängigkeit in pom.xml hinzufügen
+Für Log4j 2:
+
+xml
+Kopieren
+Bearbeiten
+<dependencies>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.20.0</version> <!-- oder aktuelle Version -->
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+    <version>2.20.0</version>
+  </dependency>
+</dependencies>
+2. Konfigurationsdatei erstellen
+Lege im src/main/resources-Verzeichnis eine Datei namens log4j2.xml an:
+
+xml
+Kopieren
+Bearbeiten
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="Console"/>
+    </Root>
+  </Loggers>
+</Configuration>
+3. Logger im Code verwenden
+java
+Kopieren
+Bearbeiten
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class Main {
+    private static final Logger logger = LogManager.getLogger(Main.class);
+
+    public static void main(String[] args) {
+        logger.info("Dies ist eine Info-Lognachricht.");
+        logger.error("Dies ist eine Fehlermeldung.");
+    }
+}
+Vorteile von Log4j gegenüber System.out.println():
+Log-Level (Filter nach Wichtigkeit)
+
+Ausgabe auf Konsole, in Dateien oder externen Systemen
+
+Bessere Performance in großen Anwendungen
+
+Flexibel konfigurierbar ohne Codeänderung
+
+Möchtest du ein konkretes Beispielprojekt oder eine minimale Vorlage sehen?
+
+6. Prompt: grundlegende methoden eines junit Tests
+--> In JUnit gibt es grundlegende Methoden und Annotations, die es ermöglichen, Tests zu strukturieren und auszuführen. Hier sind die wichtigsten Methoden und Konzepte, die in einem typischen JUnit-Test verwendet werden:
+
+1. @Test Annotation
+Diese Annotation kennzeichnet eine Methode als Testmethode. Jede Methode, die als Test ausgeführt werden soll, wird mit @Test versehen.
+
+java
+Kopieren
+Bearbeiten
+@Test
+public void testAddiere() {
+    int result = 2 + 2;
+    assertEquals(4, result);
+}
+2. assertEquals()
+Diese Methode wird verwendet, um zu überprüfen, ob zwei Werte gleich sind. Wenn sie unterschiedlich sind, schlägt der Test fehl.
+
+java
+Kopieren
+Bearbeiten
+assertEquals(4, result);
+3. assertTrue() und assertFalse()
+assertTrue() überprüft, ob eine Bedingung wahr ist, und assertFalse() überprüft, ob eine Bedingung falsch ist.
+
+java
+Kopieren
+Bearbeiten
+assertTrue(result > 0);
+assertFalse(result < 0);
+4. @Before und @After
+@Before wird vor jeder Testmethode ausgeführt, und @After wird nach jeder Testmethode ausgeführt. Sie werden häufig verwendet, um Setup- und Bereinigungscodes zu implementieren.
+
+java
+Kopieren
+Bearbeiten
+@Before
+public void setUp() {
+    // Initialisierungen vor jedem Test
+}
+
+@After
+public void tearDown() {
+    // Bereinigungen nach jedem Test
+}
+5. @BeforeClass und @AfterClass
+@BeforeClass und @AfterClass werden einmal vor bzw. nach allen Tests in der Testklasse ausgeführt, also für statische Initialisierungen und Bereinigungen.
+
+java
+Kopieren
+Bearbeiten
+@BeforeClass
+public static void setUpBeforeClass() {
+    // Initialisierung, die nur einmal vor allen Tests ausgeführt wird
+}
+
+@AfterClass
+public static void tearDownAfterClass() {
+    // Bereinigung nach allen Tests
+}
+6. @Ignore
+Mit @Ignore kann ein Test vorübergehend deaktiviert werden, ohne ihn zu löschen.
+
+java
+Kopieren
+Bearbeiten
+@Ignore
+public void testAddiere() {
+    // Dieser Test wird ignoriert
+}
+7. @ParameterizedTest (JUnit 5)
+In JUnit 5 können parametrisierte Tests verwendet werden, um denselben Test mit verschiedenen Eingabewerten auszuführen.
+
+java
+Kopieren
+Bearbeiten
+@ParameterizedTest
+@ValueSource(ints = {1, 2, 3})
+public void testAddiere(int num) {
+    assertTrue(num > 0);
+}
+8. assertNull() und assertNotNull()
+assertNull() überprüft, ob ein Objekt null ist, und assertNotNull() überprüft, ob es nicht null ist.
+
+java
+Kopieren
+Bearbeiten
+assertNull(obj);
+assertNotNull(obj);
+9. assertSame() und assertNotSame()
+assertSame() prüft, ob zwei Objekte dieselbe Instanz sind, während assertNotSame() prüft, ob sie nicht dieselbe Instanz sind.
+
+java
+Kopieren
+Bearbeiten
+assertSame(expected, actual);
+assertNotSame(expected, actual);
+10. Expected Exceptions (JUnit 4)
+Wenn eine Methode eine Ausnahme werfen soll, kann dies mit der @Test(expected = Exception.class)-Annotation getestet werden.
+
+java
+Kopieren
+Bearbeiten
+@Test(expected = ArithmeticException.class)
+public void testDivisionDurchNull() {
+    int result = 1 / 0;
+}
+Zusammengefasst:
+@Test: Kennzeichnet eine Testmethode.
+
+assertEquals(): Überprüft Gleichheit.
+
+assertTrue() / assertFalse(): Überprüft Wahrheitswerte.
+
+@Before / @After: Setup und Bereinigung vor/nach jedem Test.
+
+@BeforeClass / @AfterClass: Setup und Bereinigung einmalig vor/nach allen Tests.
+
+@Ignore: Deaktiviert einen Test vorübergehend.
+
+assertNull() / assertNotNull(): Überprüft null-Werte.
+
+assertSame() / assertNotSame(): Überprüft Objektinstanzen.
+
+@ParameterizedTest (JUnit 5): Für parametrische Tests.
+
+Diese Methoden und Annotations bilden die Grundlage für das Erstellen und Ausführen von JUnit-Tests.
+
+
+
+
+
+
+
+
+

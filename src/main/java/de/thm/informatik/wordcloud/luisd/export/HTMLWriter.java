@@ -8,30 +8,30 @@ public class HTMLWriter {
     //Methode um Inhalt der Map in html Datei zu schreiben
     public static void writeToHTMLFile(String filenameInput, String filenameOutput, Map<String, Integer> map, String frequency) throws IOException {
         StringBuilder builder = new StringBuilder();
-        //einlesen der vorgegebenen html Datei
-        try (BufferedReader reader = new BufferedReader(new FileReader(filenameInput))) {
+        
+        // einlesen der vorgegebenen html Datei (filenameInput ist jetzt relativ, z.B. src/main/resources/input/wordcloud.html)
+        // HINWEIS: Verwenden Sie UTF-8, um Kodierungsprobleme zu vermeiden
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filenameInput), "UTF-8"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 builder.append(line).append("\n");
             }
         } catch (IOException e) {
-            throw new IOException("Error reading file");
+            // Verbesserte Fehlermeldung
+            throw new IOException("Error reading HTML template file: " + filenameInput, e);
         }
 
         String templateContent = builder.toString();
-        //entfernen aller vorhanden span Objekte(alte Wordcloud)
+        // entfernen aller vorhanden span Objekte(alte Wordcloud)
         templateContent = templateContent.replaceAll("<span[^>]*>.*?</span>", "");
 
         StringBuilder tagCloudHtml = new StringBuilder();
 
-        //Teration durch gesamte Map
+        // Iteration durch gesamte Map (Ihr Code)...
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            //Methode um aufgrund des map Values(Frequenz) eine font thickness zu bestimmen
             String className;
             if ("yes".equals(frequency)) {
-                // Wenn frequency true ist, benutze getClassForWeight, um die Klasse basierend auf der Häufigkeit zu setzen
                 className = getWeight(entry.getValue());
-
                 tagCloudHtml.append("<span class=\"wrd ").append(className).append("\">")
                         .append("<a href=\"https://www.google.com/search?q=")
                         .append(entry.getKey())
@@ -40,10 +40,7 @@ public class HTMLWriter {
                         .append("</a></span>\n");
 
             } else {
-                // Wenn frequency false ist, verwenden wir eine Standard-Klasse (z.B. tagcloud4)
-
                 className = "tagcloud2";  // Alle haben die gleiche Schriftgröße
-
                 tagCloudHtml.append("<span class=\"wrd ").append(className).append("\">")
                         .append("<a href=\"https://www.google.com/search?q=")
                         .append(entry.getKey())
@@ -53,16 +50,28 @@ public class HTMLWriter {
             }
         }
 
-        //Initialisierung der Variable die alle neuen span Objekte enthält
-        //diese neuen span Objekte ersetzen den angegeben Marker, also werden hinzugefügt
+        // Initialisierung der Variable... (Ihr Code)
         String newContent = templateContent.replace("<!-- TODO: Hier die generierten Tags einsetzen -->", tagCloudHtml.toString());
 
-        //Schreiben der neuen span Objekte in modifizierte html Datei(output Datei)
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filenameOutput))) {
+        File outputFile = new File(filenameOutput); // filenameOutput ist jetzt target/output/wordcloudOutput.html
+        File outputDir = outputFile.getParentFile();
+        
+        if (outputDir != null && !outputDir.exists()) {
+            if (!outputDir.mkdirs()) {
+                throw new IOException("Could not create output directory: " + outputDir.getAbsolutePath());
+            }
+        }
+
+        // Schreiben der neuen span Objekte in modifizierte html Datei(output Datei)
+        // HINWEIS: Verwenden Sie UTF-8, um Kodierungsprobleme zu vermeiden
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
             writer.write(newContent);
         } catch (IOException e) {
-            throw new IOException("Error writing file");
+            // Verbesserte Fehlermeldung
+            throw new IOException("Error writing HTML output file: " + filenameOutput, e);
         }
+        
+        System.out.println("[INFO] HTML file written successfully to: " + filenameOutput);
     }
 
     //Methode um basierend auf der Frequenz(map Value) eine Schriftstärke(font thickness) festzulegen

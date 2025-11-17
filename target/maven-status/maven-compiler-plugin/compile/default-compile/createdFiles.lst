@@ -1,0 +1,14 @@
+de\thm\informatik\wordcloud\luisd\domain\TextHandler.class
+de\thm\informatik\wordcloud\luisd\service\ExtractDocx.class
+de\thm\informatik\wordcloud\luisd\export\CSVWriter.class
+de\thm\informatik\wordcloud\luisd\service\ExtractTxt.class
+de\thm\informatik\wordcloud\luisd\service\ExtractPdf.class
+de\thm\informatik\wordcloud\luisd\facade\Facade.class
+de\thm\informatik\wordcloud\luisd\service\TextTokenizer.class
+de\thm\informatik\wordcloud\luisd\service\ProcessText.class
+de\thm\informatik\wordcloud\luisd\ui\WordCloudUI.class
+de\thm\informatik\wordcloud\luisd\domain\WordFilter.class
+de\thm\informatik\wordcloud\luisd\export\HTMLWriter.class
+de\thm\informatik\wordcloud\luisd\service\FileValidater.class
+de\thm\informatik\wordcloud\luisd\service\ExtractPptx.class
+de\thm\informatik\wordcloud\luisd\service\StopWordsHandling.class

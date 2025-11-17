@@ -1,10 +1,10 @@
 package de.thm.informatik.wordcloud.luisd.ui;
 
 import de.thm.informatik.wordcloud.luisd.facade.Facade;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File; // IMPORT HINZUGEFÜGT
 import java.io.IOException;
 import java.util.*;
 
@@ -16,7 +16,7 @@ public class WordCloudUI {
     public static void main(String[] args) throws IOException {
 
         System.out.print("Folder path: ");
-        String folderPath = in.nextLine();
+        String folderPath = in.nextLine(); // z.B. "src/main/resources/samples"
         System.out.print("Language (english/german): ");
         String language = in.nextLine();
         System.out.print("Max words (1 - n): ");
@@ -40,13 +40,23 @@ public class WordCloudUI {
     }
 
     public static void startProgram(String folderPath, String language, int maxWords, int minFrequency,
-                                    String showFrequency, String group, String convertLower,
-                                    String sortAlphabetically, String stopWords) throws IOException {
+                                     String showFrequency, String group, String convertLower,
+                                     String sortAlphabetically, String stopWords) throws IOException {
 
-        //dynamischer Pfad zu den zu extrahierenden Dateien und der Stopwords Datei
-        String stopwordPath = "C:\\Users\\luisd\\IdeaProjects\\WordCloud-Testat3-PR2\\src\\main\\resources\\stopWordFolder\\stopwords.txt";
+        // Pfad zur Stopwords-Datei (EINGABE)
+        String stopwordPath = "src" + File.separator + "main" + File.separator + "resources" + 
+                              File.separator + "stopWordFolder" + File.separator + "stopwords.txt";
 
-        //Initialisierung neuer Facade um factory Methods aufrufen zu können
+        // Pfad zur HTML-Vorlage (EINGABE)
+        String templateBasePath = "src" + File.separator + "main" + File.separator + "resources" + File.separator;
+        String htmlInputPath = templateBasePath + "input" + File.separator + "wordcloud.html";
+
+        // Pfad für die Ausgabedateien (AUSGABE), konsistent mit CSVWriter
+        String outputBasePath = "target" + File.separator + "output" + File.separator;
+        String htmlOutputPath = outputBasePath + "wordcloudOutput.html";
+
+        // Initialisierung neuer Facade um factory Methods aufrufen zu können
+        // Der 'folderPath' kommt jetzt korrekt vom Benutzer (z.B. "src/main/resources/samples")
         Facade facade = new Facade(folderPath, language, group, convertLower, stopwordPath);
 
         if(!stopWords.isEmpty()) {
@@ -54,16 +64,15 @@ public class WordCloudUI {
             facade.removeStopWords();
         }
 
-        //Erstellen neuer Map um die Vorgabe der MaxWords einzuhalten, die Datei wird mit der alten gefüllt bis sie
-        //die Vorgabe der maxWords erreicht hat, außerdem wird ggf. nach Aplhabet sortier
+        // Erstellen neuer Map... (Ihr Code)
         Map<String, Integer> filteredMap = facade.getFilteredMap(maxWords, minFrequency, sortAlphabetically);
 
-        //dynamischer Pfad zu der einzulesenden und auszugebenden html Datei
-        String basePath = "C:\\Users\\luisd\\IdeaProjects\\WordCloud-Testat3-PR2\\src\\main\\resources\\";
-        facade.writeToCSVFile(filteredMap);
-        facade.writeToHTMLFile(basePath + "input\\wordcloud.html", basePath + "output\\wordcloudOutput.html", filteredMap, showFrequency);
-        //Start des Programms in Browser
-        Runtime.getRuntime().exec("cmd /c start " + basePath + "output\\wordcloudOutput.html");
+        // Schreiben der Dateien an die korrigierten Pfade
+        facade.writeToCSVFile(filteredMap); // Nutzt bereits target/output/
+        facade.writeToHTMLFile(htmlInputPath, htmlOutputPath, filteredMap, showFrequency);
+        
+        // Start des Programms in Browser (muss auf die target-Datei zeigen)
+        Runtime.getRuntime().exec("cmd /c start " + htmlOutputPath);
 
         System.out.println();
         logger.info("Anzahl Wörter: {}", filteredMap.size());

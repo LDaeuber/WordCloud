@@ -1,5 +1,3 @@
-package java;
-
 import de.thm.informatik.wordcloud.luisd.domain.WordFilter;
 import org.junit.jupiter.api.*;
 

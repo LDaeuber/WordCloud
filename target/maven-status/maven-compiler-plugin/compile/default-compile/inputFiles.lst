@@ -1,0 +1,14 @@
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\domain\TextHandler.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\domain\WordFilter.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\export\CSVWriter.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\export\HTMLWriter.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\facade\Facade.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\ExtractDocx.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\ExtractPdf.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\ExtractPptx.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\ExtractTxt.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\FileValidater.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\ProcessText.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\StopWordsHandling.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\service\TextTokenizer.java
+C:\Users\luisd\UNI\WordCloud\src\main\java\de\thm\informatik\wordcloud\luisd\ui\WordCloudUI.java

@@ -12,6 +12,7 @@
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
         <maven.compiler.target>23</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -72,4 +73,31 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <!-- HINZUGEFÜGT: Build-Konfiguration -->
+    <build>
+        <plugins>
+            <!-- Plugin zum Ausführen der Java-Klasse -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <!-- Definition der Hauptklasse -->
+                    <mainClass>de.thm.informatik.wordcloud.luisd.ui.WordCloudUI</mainClass>
+                </configuration>
+            </plugin>
+            
+            <!-- Plugin zum Kompilieren (gute Praxis, dies explizit zu definieren) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
